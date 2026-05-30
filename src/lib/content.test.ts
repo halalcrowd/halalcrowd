@@ -29,15 +29,34 @@ const rawData: RawDirectoryData = {
       fldbfWcWb6TI05bfJ: ""
     })
   ],
-  brands: [record("recBrandMcD", { fldoRlPEiUzBtv1io: "McDonald's", fldt170QMF1Ns36GE: ["recPlaceActive"] })],
+  brands: [
+    record("recBrandMcD", {
+      fldoRlPEiUzBtv1io: "McDonald's",
+      fldPbXwr7jP6eIyH7: "mcdonalds-sg",
+      fldt170QMF1Ns36GE: ["recPlaceActive"]
+    })
+  ],
   neighbourhoods: [
     record("recNeighbourhoodMandai", {
       fld3NrLuamdOa6g3T: "Mandai",
+      fldxvjwCbGtllzfro: "mandai-estate",
       fldXzufBDtHMvQWvI: ["recPlaceActive"]
     })
   ],
-  malls: [record("recMallZoo", { fld3f636Scz9U8FGu: "Singapore Zoo", fldFs0jScxRCFD5Lk: ["recPlaceActive"] })],
-  mrtStations: [record("recMrtKhatib", { fldvgCAt1Exb33CpN: "Khatib MRT", fld1z8zgOdV28FzOg: ["recPlaceActive"] })]
+  malls: [
+    record("recMallZoo", {
+      fld3f636Scz9U8FGu: "Singapore Zoo",
+      fldJgc4DNoNxj8Vaj: "singapore-zoo-location",
+      fldFs0jScxRCFD5Lk: ["recPlaceActive"]
+    })
+  ],
+  mrtStations: [
+    record("recMrtKhatib", {
+      fldvgCAt1Exb33CpN: "Khatib MRT",
+      fldIuz0UqN72QCGow: "khatib-station",
+      fld1z8zgOdV28FzOg: ["recPlaceActive"]
+    })
+  ]
 };
 
 describe("normalizeDirectoryData", () => {
@@ -53,9 +72,18 @@ describe("normalizeDirectoryData", () => {
     const directory = normalizeDirectoryData(rawData);
     const place = directory.places[0];
 
-    expect(place.brands[0]).toMatchObject({ id: "recBrandMcD", name: "McDonald's", slug: "mcdonalds" });
-    expect(place.neighbourhoods[0]).toMatchObject({ id: "recNeighbourhoodMandai", name: "Mandai", slug: "mandai" });
-    expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-mrt" });
+    expect(place.brands[0]).toMatchObject({ id: "recBrandMcD", name: "McDonald's", slug: "mcdonalds-sg" });
+    expect(place.neighbourhoods[0]).toMatchObject({
+      id: "recNeighbourhoodMandai",
+      name: "Mandai",
+      slug: "mandai-estate"
+    });
+    expect(place.malls[0]).toMatchObject({
+      id: "recMallZoo",
+      name: "Singapore Zoo",
+      slug: "singapore-zoo-location"
+    });
+    expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-station" });
   });
 
   it("counts active outlets for entities and exposes featured places", () => {

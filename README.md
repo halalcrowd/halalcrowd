@@ -27,7 +27,7 @@ The build reads these tables from the `Halal Crowd` base:
 - Malls: `tblNHIMo2JeeXshr9`
 - MRT Stations: `tblk6wqWRk16yY45D`
 
-Food place pages use the `Slug` field. Brand, neighbourhood, mall, and MRT station routes generate slugs from the `Name` field. Records with an empty `Status` field are excluded from active listings.
+Food place, brand, neighbourhood, mall, and MRT station pages use their Airtable `Slug` fields. Brand, neighbourhood, mall, and MRT station records fall back to generated `Name` slugs if a slug is missing. Records with an empty `Status` field are excluded from active listings.
 
 ## Scripts
 

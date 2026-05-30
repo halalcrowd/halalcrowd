@@ -44,18 +44,22 @@ export const FIELDS = {
   },
   brands: {
     name: "fldoRlPEiUzBtv1io",
+    slug: "fldPbXwr7jP6eIyH7",
     places: "fldt170QMF1Ns36GE"
   },
   neighbourhoods: {
     name: "fld3NrLuamdOa6g3T",
+    slug: "fldxvjwCbGtllzfro",
     places: "fldXzufBDtHMvQWvI"
   },
   malls: {
     name: "fld3f636Scz9U8FGu",
+    slug: "fldJgc4DNoNxj8Vaj",
     places: "fldFs0jScxRCFD5Lk"
   },
   mrtStations: {
     name: "fldvgCAt1Exb33CpN",
+    slug: "fldIuz0UqN72QCGow",
     places: "fld1z8zgOdV28FzOg"
   }
 } as const;
@@ -89,12 +93,13 @@ function linkName(link: AirtableLinkedRecord): string {
   return typeof link === "string" ? "" : link.name ?? "";
 }
 
-function entityFromRecord(record: AirtableRecord, nameField: string, placesField: string): DirectoryEntity {
+function entityFromRecord(record: AirtableRecord, nameField: string, slugField: string, placesField: string): DirectoryEntity {
   const name = text(record.fields[nameField]);
+  const slug = text(record.fields[slugField]).trim() || slugify(name);
   return {
     id: record.id,
     name,
-    slug: slugify(name),
+    slug,
     placeIds: links(record.fields[placesField]).map(linkId),
     placeCount: 0
   };
@@ -175,16 +180,16 @@ function countActivePlaces(entities: DirectoryEntity[], activePlaceIds: Set<stri
 
 export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
   const brands = raw.brands
-    .map((record) => entityFromRecord(record, FIELDS.brands.name, FIELDS.brands.places))
+    .map((record) => entityFromRecord(record, FIELDS.brands.name, FIELDS.brands.slug, FIELDS.brands.places))
     .filter((entity) => entity.name && entity.slug);
   const neighbourhoods = raw.neighbourhoods.map((record) =>
-    entityFromRecord(record, FIELDS.neighbourhoods.name, FIELDS.neighbourhoods.places)
+    entityFromRecord(record, FIELDS.neighbourhoods.name, FIELDS.neighbourhoods.slug, FIELDS.neighbourhoods.places)
   ).filter((entity) => entity.name && entity.slug);
   const malls = raw.malls
-    .map((record) => entityFromRecord(record, FIELDS.malls.name, FIELDS.malls.places))
+    .map((record) => entityFromRecord(record, FIELDS.malls.name, FIELDS.malls.slug, FIELDS.malls.places))
     .filter((entity) => entity.name && entity.slug);
   const mrtStations = raw.mrtStations.map((record) =>
-    entityFromRecord(record, FIELDS.mrtStations.name, FIELDS.mrtStations.places)
+    entityFromRecord(record, FIELDS.mrtStations.name, FIELDS.mrtStations.slug, FIELDS.mrtStations.places)
   ).filter((entity) => entity.name && entity.slug);
 
   const lookups = {
