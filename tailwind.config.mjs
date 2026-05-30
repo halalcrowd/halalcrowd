@@ -6,16 +6,17 @@ export default {
       colors: {
         ink: "#181613",
         muted: "#6e6960",
-        line: "#e8e2d8",
-        paper: "#fffdf9",
-        shell: "#f7f3eb",
+        line: "#d9eadf",
+        paper: "#ffffff",
+        shell: "#eff8f2",
         halal: "#2f6f4e",
+        halalDark: "#24583e",
         sage: "#dfe9df",
-        saffron: "#c88438"
+        saffron: "#2f6f4e"
       },
       fontFamily: {
-        display: ["Cormorant Garamond", "Georgia", "serif"],
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"]
+        display: ["Roboto", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Roboto", "ui-sans-serif", "system-ui", "sans-serif"]
       },
       boxShadow: {
         editorial: "0 22px 60px rgba(24, 22, 19, 0.08)"
