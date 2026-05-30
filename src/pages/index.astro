@@ -1,0 +1,80 @@
+---
+import EntityGrid from "../components/EntityGrid.astro";
+import PlaceCard from "../components/PlaceCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getDirectoryData } from "../lib/airtable";
+
+const data = await getDirectoryData();
+const topNeighbourhoods = data.neighbourhoods.filter((item) => item.placeCount > 0).slice(0, 8);
+const featuredPlaces = (data.featuredPlaces.length ? data.featuredPlaces : data.places.slice(0, 6)).slice(0, 6);
+const totalPlaces = data.places.length;
+---
+
+<BaseLayout title="Halal Crowd" description="Discover halal food places across Singapore by neighbourhood, brand, mall, and MRT station.">
+  <section class="container-page grid min-h-[calc(100dvh-5rem)] items-center gap-12 py-14 lg:grid-cols-[1.05fr_0.95fr]">
+    <div>
+      <p class="eyebrow">Singapore Halal Food Directory</p>
+      <h1 class="editorial-title mt-5">Discover Halal Food Places Across Singapore</h1>
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+        Browse MUIS halal-certified outlets by neighbourhood, brand, mall, and MRT station, all refreshed from Airtable at build time.
+      </p>
+      <form action="/search" class="mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row">
+        <label class="sr-only" for="hero-search">Search halal food places</label>
+        <input
+          id="hero-search"
+          name="q"
+          type="search"
+          placeholder="Search McDonald's, Subway, Bedok, VivoCity..."
+          class="focus-ring h-14 flex-1 border border-line bg-paper px-5 text-base shadow-sm"
+        />
+        <button class="focus-ring h-14 bg-ink px-7 text-sm font-semibold text-paper transition hover:bg-halal">Search</button>
+      </form>
+      <div class="mt-10 grid grid-cols-3 gap-px border border-line bg-line text-center">
+        <div class="bg-paper p-5">
+          <span class="block font-display text-4xl font-semibold">{totalPlaces}</span>
+          <span class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Outlets</span>
+        </div>
+        <div class="bg-paper p-5">
+          <span class="block font-display text-4xl font-semibold">{data.neighbourhoods.length}</span>
+          <span class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Areas</span>
+        </div>
+        <div class="bg-paper p-5">
+          <span class="block font-display text-4xl font-semibold">{data.brands.length}</span>
+          <span class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Brands</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2">
+      {featuredPlaces.slice(0, 4).map((place) => <PlaceCard place={place} compact />)}
+    </div>
+  </section>
+
+  <section class="container-page py-12">
+    <div class="mb-8 flex items-end justify-between gap-6">
+      <div>
+        <p class="eyebrow">Browse By Area</p>
+        <h2 class="section-title mt-3">Featured Neighbourhoods</h2>
+      </div>
+      <a href="/directory" class="focus-ring hidden text-sm font-semibold text-halal hover:text-ink sm:block">View directory</a>
+    </div>
+    <EntityGrid entities={topNeighbourhoods} basePath="/neighbourhoods" />
+  </section>
+
+  <section class="container-page py-12">
+    <div class="mb-8">
+      <p class="eyebrow">Brands</p>
+      <h2 class="section-title mt-3">Household Names Across Singapore</h2>
+    </div>
+    <EntityGrid entities={data.brands} basePath="/brands" />
+  </section>
+
+  <section class="container-page py-12">
+    <div class="mb-8">
+      <p class="eyebrow">Featured</p>
+      <h2 class="section-title mt-3">Editor’s Picks</h2>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {featuredPlaces.map((place) => <PlaceCard place={place} />)}
+    </div>
+  </section>
+</BaseLayout>

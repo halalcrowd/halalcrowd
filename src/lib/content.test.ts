@@ -1,0 +1,68 @@
+import { describe, expect, it } from "vitest";
+import { normalizeDirectoryData } from "./content";
+import type { AirtableRecord, RawDirectoryData } from "./types";
+
+const record = (id: string, fields: Record<string, unknown>): AirtableRecord => ({
+  id,
+  createdTime: "2026-05-30T00:00:00.000Z",
+  fields
+});
+
+const rawData: RawDirectoryData = {
+  foodPlaces: [
+    record("recPlaceActive", {
+      fldgcSF6Fx6mmWzu2: "McDonald's Singapore Zoo",
+      fldOo8LvtYfSDkjfz: "mcdonalds-singapore-zoo",
+      fldzBH7Zk80AYQiZX: [{ id: "recBrandMcD", name: "McDonald's" }],
+      fldLa5ewVJEvNuesO: ["recNeighbourhoodMandai"],
+      fldkBtytmhdwcHQLh: [{ id: "recMallZoo", name: "Singapore Zoo" }],
+      fldFzC5orRtujErco: ["recMrtKhatib"],
+      fldZ3PTfN6IpqjpEk: "Fast Food",
+      fldbfWcWb6TI05bfJ: { name: "MUIS Halal-certified" },
+      fld4KizsgKnBP2utQ: " https://www.mcdonalds.com.sg ",
+      fldBMHLY2uXhsN4fF: "https://example.com/zoo.jpg",
+      fldaxulW34UhrK764: true
+    }),
+    record("recPlaceInactive", {
+      fldgcSF6Fx6mmWzu2: "Hidden Outlet",
+      fldOo8LvtYfSDkjfz: "hidden-outlet",
+      fldbfWcWb6TI05bfJ: ""
+    })
+  ],
+  brands: [record("recBrandMcD", { fldoRlPEiUzBtv1io: "McDonald's", fldt170QMF1Ns36GE: ["recPlaceActive"] })],
+  neighbourhoods: [
+    record("recNeighbourhoodMandai", {
+      fld3NrLuamdOa6g3T: "Mandai",
+      fldXzufBDtHMvQWvI: ["recPlaceActive"]
+    })
+  ],
+  malls: [record("recMallZoo", { fld3f636Scz9U8FGu: "Singapore Zoo", fldFs0jScxRCFD5Lk: ["recPlaceActive"] })],
+  mrtStations: [record("recMrtKhatib", { fldvgCAt1Exb33CpN: "Khatib MRT", fld1z8zgOdV28FzOg: ["recPlaceActive"] })]
+};
+
+describe("normalizeDirectoryData", () => {
+  it("keeps only active places and trims external URLs", () => {
+    const directory = normalizeDirectoryData(rawData);
+
+    expect(directory.places).toHaveLength(1);
+    expect(directory.places[0].name).toBe("McDonald's Singapore Zoo");
+    expect(directory.places[0].websiteUrl).toBe("https://www.mcdonalds.com.sg");
+  });
+
+  it("resolves linked record names from inline values and lookup tables", () => {
+    const directory = normalizeDirectoryData(rawData);
+    const place = directory.places[0];
+
+    expect(place.brands[0]).toMatchObject({ id: "recBrandMcD", name: "McDonald's", slug: "mcdonalds" });
+    expect(place.neighbourhoods[0]).toMatchObject({ id: "recNeighbourhoodMandai", name: "Mandai", slug: "mandai" });
+    expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-mrt" });
+  });
+
+  it("counts active outlets for entities and exposes featured places", () => {
+    const directory = normalizeDirectoryData(rawData);
+
+    expect(directory.featuredPlaces).toHaveLength(1);
+    expect(directory.brands[0].placeCount).toBe(1);
+    expect(directory.neighbourhoods[0].placeCount).toBe(1);
+  });
+});

@@ -1,0 +1,7 @@
+.env
+.env.local
+.astro
+dist
+node_modules
+pagefind
+pagefind-fragment

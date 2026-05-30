@@ -1,0 +1,54 @@
+---
+import FilterBar from "../components/FilterBar.astro";
+import PlaceCard from "../components/PlaceCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getDirectoryData } from "../lib/airtable";
+
+const data = await getDirectoryData();
+const filterPayload = data.places.map((place) => ({
+  name: place.name,
+  slug: place.slug,
+  address: place.address,
+  category: place.category,
+  brands: place.brands,
+  neighbourhoods: place.neighbourhoods,
+  malls: place.malls,
+  mrtStations: place.mrtStations
+}));
+---
+
+<BaseLayout title="Directory" description="Filter Singapore halal food places by neighbourhood, brand, category, MRT station, and mall.">
+  <section class="container-page py-14">
+    <p class="eyebrow">Directory</p>
+    <h1 class="editorial-title mt-5">Halal Food Places In Singapore</h1>
+    <p class="mt-6 max-w-3xl text-lg text-muted">
+      Filter active halal-certified outlets by neighbourhood, brand, category, MRT station, and mall.
+    </p>
+  </section>
+
+  <section class="container-page sticky top-0 z-20 py-4">
+    <FilterBar data={data} />
+    <p id="directory-count" class="mt-4 text-sm font-semibold text-muted">{data.places.length} places</p>
+  </section>
+
+  <section class="container-page py-8" data-pagefind-body>
+    <p id="directory-empty" hidden class="border border-line bg-paper p-8 text-center text-muted">No outlets match those filters.</p>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {data.places.map((place) => (
+        <div
+          data-place-card={place.slug}
+          data-pagefind-meta={`place:${place.name}, brand:${place.brands[0]?.name ?? ""}, neighbourhood:${place.neighbourhoods[0]?.name ?? ""}, category:${place.category}, mrt:${place.mrtStations[0]?.name ?? ""}, mall:${place.malls[0]?.name ?? ""}`}
+        >
+          <PlaceCard place={place} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ filterPayload }}>
+    window.__DIRECTORY_PLACES__ = filterPayload;
+  </script>
+  <script>
+    import "../scripts/directory-filter";
+  </script>
+</BaseLayout>

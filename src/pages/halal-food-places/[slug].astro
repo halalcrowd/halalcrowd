@@ -1,0 +1,95 @@
+---
+import PlaceCard from "../../components/PlaceCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getDirectoryData } from "../../lib/airtable";
+
+export async function getStaticPaths() {
+  const data = await getDirectoryData();
+  return data.places.map((place) => ({ params: { slug: place.slug }, props: { place, places: data.places } }));
+}
+
+const { place, places } = Astro.props;
+const brand = place.brands[0];
+const neighbourhood = place.neighbourhoods[0];
+const mall = place.malls[0];
+const mrt = place.mrtStations[0];
+const related = places
+  .filter((item) => item.id !== place.id)
+  .filter((item) => item.brands.some((entity) => entity.id === brand?.id) || item.neighbourhoods.some((entity) => entity.id === neighbourhood?.id))
+  .slice(0, 3);
+const externalLinks = [
+  ["Website", place.websiteUrl],
+  ["Facebook", place.facebookUrl],
+  ["Instagram", place.instagramUrl],
+  ["Google Maps", place.googleMapsUrl]
+].filter(([, href]) => href);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: place.name,
+  image: place.imageUrl,
+  address: place.address,
+  telephone: place.phone,
+  url: place.websiteUrl || undefined,
+  servesCuisine: place.category || "Halal food",
+  areaServed: "Singapore",
+  hasMap: place.googleMapsUrl || undefined
+};
+---
+
+<BaseLayout title={place.name} description={place.description || `${place.name}, ${place.status}, in Singapore.`}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <article data-pagefind-body data-pagefind-meta={`place:${place.name}, brand:${brand?.name ?? ""}, neighbourhood:${neighbourhood?.name ?? ""}, category:${place.category}, mrt:${mrt?.name ?? ""}, mall:${mall?.name ?? ""}`}>
+    <section class="container-page grid gap-10 py-12 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="aspect-[4/3] overflow-hidden border border-line bg-shell lg:sticky lg:top-8 lg:self-start">
+        <img src={place.imageUrl} alt={place.name} class="h-full w-full object-cover" />
+      </div>
+      <div>
+        {brand && <a href={`/brands/${brand.slug}`} class="eyebrow">{brand.name}</a>}
+        <h1 class="editorial-title mt-5">{place.name}</h1>
+        <div class="mt-6 flex flex-wrap gap-2">
+          {place.status && <span class="rounded-full bg-sage px-4 py-2 text-sm font-semibold text-halal">{place.status}</span>}
+          {place.certificationNumber && <span class="rounded-full border border-line px-4 py-2 text-sm font-semibold text-muted">{place.certificationNumber}</span>}
+        </div>
+        {place.description && <p class="mt-8 max-w-3xl text-lg leading-8 text-muted">{place.description}</p>}
+        <dl class="mt-10 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2">
+          {[
+            ["Address", place.address],
+            ["Street", [place.streetName, place.postalCode].filter(Boolean).join(", ")],
+            ["Phone", place.phone],
+            ["Category", place.category],
+            ["Opening Hours", place.openingHours],
+            ["Nearest MRT", mrt?.name]
+          ].filter(([, value]) => value).map(([label, value]) => (
+            <div class="bg-paper p-5">
+              <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{label}</dt>
+              <dd class="mt-2 whitespace-pre-line text-sm font-medium text-ink">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div class="mt-8 flex flex-wrap gap-3">
+          {neighbourhood && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/neighbourhoods/${neighbourhood.slug}`}>{neighbourhood.name}</a>}
+          {mall && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/malls/${mall.slug}`}>{mall.name}</a>}
+          {mrt && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/mrt-stations/${mrt.slug}`}>{mrt.name}</a>}
+        </div>
+        {externalLinks.length > 0 && (
+          <div class="mt-8 flex flex-wrap gap-3">
+            {externalLinks.map(([label, href]) => (
+              <a class="focus-ring bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-halal" href={href} target="_blank" rel="noreferrer">{label}</a>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  </article>
+
+  {related.length > 0 && (
+    <section class="container-page py-12">
+      <p class="eyebrow">Related</p>
+      <h2 class="section-title mt-3">Nearby Or Same Brand</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {related.map((item) => <PlaceCard place={item} />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

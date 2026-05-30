@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Search" description="Search Halal Crowd outlets, brands, neighbourhoods, malls, and MRT station pages.">
+  <section class="container-page py-14">
+    <p class="eyebrow">Search</p>
+    <h1 class="editorial-title mt-5">Search Halal Crowd</h1>
+    <p class="mt-6 max-w-2xl text-lg text-muted">Find outlets, brands, neighbourhoods, MRT stations, and malls indexed from the static site.</p>
+  </section>
+  <section class="container-page py-8">
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+    <div id="search" class="border border-line bg-paper p-5"></div>
+    <script is:inline src="/pagefind/pagefind-ui.js"></script>
+    <script is:inline>
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.PagefindUI) {
+          new window.PagefindUI({ element: "#search", showSubResults: true });
+          const params = new URLSearchParams(window.location.search);
+          const query = params.get("q");
+          if (query) {
+            const input = document.querySelector("#search input");
+            if (input) {
+              input.value = query;
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          }
+        }
+      });
+    </script>
+  </section>
+</BaseLayout>

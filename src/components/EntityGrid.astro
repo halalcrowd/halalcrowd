@@ -1,0 +1,19 @@
+---
+import type { DirectoryEntity } from "../lib/types";
+
+interface Props {
+  entities: DirectoryEntity[];
+  basePath: string;
+}
+
+const { entities, basePath } = Astro.props;
+---
+
+<div class="grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+  {entities.map((entity) => (
+    <a href={`${basePath}/${entity.slug}`} class="focus-ring bg-paper p-5 transition hover:bg-shell">
+      <span class="block font-display text-2xl font-semibold leading-tight text-ink">{entity.name}</span>
+      <span class="mt-2 block text-sm text-muted">{entity.placeCount} outlets</span>
+    </a>
+  ))}
+</div>

@@ -1,0 +1,28 @@
+---
+const nav = [
+  ["Directory", "/directory"],
+  ["Neighbourhoods", "/neighbourhoods/ang-mo-kio"],
+  ["Brands", "/brands/mcdonalds"],
+  ["Malls", "/malls/vivocity"],
+  ["MRT", "/mrt-stations/bedok-mrt"],
+  ["Search", "/search"]
+];
+---
+
+<header class="border-b border-line/80 bg-paper/90 backdrop-blur">
+  <div class="container-page flex min-h-20 items-center justify-between gap-6">
+    <a href="/" class="focus-ring flex items-center gap-3" aria-label="Halal Crowd home">
+      <span class="flex h-10 w-10 items-center justify-center rounded-full border border-halal/30 bg-sage text-sm font-bold text-halal">HC</span>
+      <span>
+        <span class="block font-display text-2xl font-semibold leading-none">Halal Crowd</span>
+        <span class="hidden text-xs font-medium uppercase tracking-[0.16em] text-muted sm:block">Singapore Directory</span>
+      </span>
+    </a>
+    <nav class="hidden items-center gap-6 text-sm font-semibold text-muted lg:flex" aria-label="Primary navigation">
+      {nav.map(([label, href]) => <a class="focus-ring transition hover:text-ink" href={href}>{label}</a>)}
+    </nav>
+    <a href="/directory" class="focus-ring rounded-full bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-halal">
+      Explore
+    </a>
+  </div>
+</header>

@@ -1,0 +1,26 @@
+---
+import PlaceCard from "../../components/PlaceCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getDirectoryData } from "../../lib/airtable";
+import { placesForEntity } from "../../lib/content";
+
+export async function getStaticPaths() {
+  const data = await getDirectoryData();
+  return data.mrtStations.map((entity) => ({ params: { slug: entity.slug }, props: { entity, places: placesForEntity(data.places, "mrtStations", entity.id) } }));
+}
+
+const { entity, places } = Astro.props;
+---
+
+<BaseLayout title={entity.name} description={`Browse halal food places near ${entity.name} in Singapore.`}>
+  <section class="container-page py-14" data-pagefind-body data-pagefind-meta={`mrt:${entity.name}`}>
+    <p class="eyebrow">MRT Station</p>
+    <h1 class="editorial-title mt-5">Halal Food Near {entity.name}</h1>
+    <p class="mt-6 text-lg text-muted">{entity.placeCount} active outlets near this MRT station.</p>
+  </section>
+  <section class="container-page py-8">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {places.map((place) => <PlaceCard place={place} />)}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,40 @@
+---
+import type { DirectoryData } from "../lib/types";
+
+interface Props {
+  data: DirectoryData;
+}
+
+const { data } = Astro.props;
+const options = [
+  ["neighbourhood", "Neighbourhood", data.neighbourhoods],
+  ["brand", "Brand", data.brands],
+  ["category", "Category", data.categories.map((category) => ({ name: category, slug: category, id: category, placeCount: 0, placeIds: [] }))],
+  ["mrt", "Nearest MRT", data.mrtStations],
+  ["mall", "Mall / Location", data.malls]
+] as const;
+---
+
+<form id="directory-filters" class="grid gap-3 border border-line bg-paper p-4 shadow-sm lg:grid-cols-[1.4fr_repeat(5,1fr)_auto]">
+  <label class="block">
+    <span class="sr-only">Search places</span>
+    <input
+      id="filter-query"
+      type="search"
+      placeholder="Search by outlet, brand, address..."
+      class="focus-ring h-12 w-full border border-line bg-paper px-4 text-sm text-ink placeholder:text-muted"
+    />
+  </label>
+  {options.map(([id, label, items]) => (
+    <label class="block">
+      <span class="sr-only">{label}</span>
+      <select id={`filter-${id}`} class="focus-ring h-12 w-full border border-line bg-paper px-3 text-sm text-ink">
+        <option value="">{label}</option>
+        {items.map((item) => <option value={item.slug || item.name}>{item.name}</option>)}
+      </select>
+    </label>
+  ))}
+  <button type="reset" class="focus-ring h-12 border border-ink px-5 text-sm font-semibold transition hover:bg-ink hover:text-paper">
+    Reset
+  </button>
+</form>
