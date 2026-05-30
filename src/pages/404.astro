@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Page Not Found" description="The requested Halal Crowd page could not be found." noindex>
+  <section class="container-page py-20">
+    <p class="eyebrow">404</p>
+    <h1 class="editorial-title mt-5">Page Not Found</h1>
+    <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+      This page may have moved, or the address may be incorrect. Continue browsing Singapore halal food places from the directory.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="focus-ring bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-halal" href="/directory">Browse Directory</a>
+      <a class="focus-ring border border-line px-5 py-3 text-sm font-semibold text-ink transition hover:bg-shell" href="/">Go Home</a>
+    </div>
+  </section>
+</BaseLayout>
