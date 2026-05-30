@@ -1,0 +1,34 @@
+---
+import EntityGrid from "./EntityGrid.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { DirectoryEntity } from "../lib/types";
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  countLabel: string;
+  emptyMessage: string;
+  entities: DirectoryEntity[];
+  basePath: string;
+}
+
+const { title, description, eyebrow, countLabel, emptyMessage, entities, basePath } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="container-page py-14" data-pagefind-body>
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="editorial-title mt-5">{title}</h1>
+    <p class="mt-6 max-w-3xl text-lg text-muted">{description}</p>
+    <p class="mt-4 text-sm font-semibold text-muted">{entities.length} {countLabel}</p>
+  </section>
+
+  <section class="container-page py-8">
+    {entities.length ? (
+      <EntityGrid entities={entities} basePath={basePath} />
+    ) : (
+      <p class="border border-line bg-paper p-8 text-center text-muted">{emptyMessage}</p>
+    )}
+  </section>
+</BaseLayout>

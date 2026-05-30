@@ -1,0 +1,11 @@
+---
+import EntityIndexPage from "../../components/EntityIndexPage.astro";
+import { getDirectoryData } from "../../lib/airtable";
+import { ENTITY_PAGE_CONFIGS } from "../../lib/entity-pages";
+
+const data = await getDirectoryData();
+const config = ENTITY_PAGE_CONFIGS.malls;
+const entities = config.getEntities(data);
+---
+
+<EntityIndexPage {...config} entities={entities} />
