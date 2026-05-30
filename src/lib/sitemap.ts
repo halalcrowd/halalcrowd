@@ -36,13 +36,6 @@ export const getSitemapUrls = (data: DirectoryData): string[] => {
   return Array.from(new Set(urls.map(absoluteUrl))).sort((a, b) => a.localeCompare(b));
 };
 
-export const buildSitemapIndexXml = (): string => {
-  return `<?xml version="1.0" encoding="UTF-8"?>` +
-    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
-    `<sitemap><loc>${xml(absoluteUrl(SITEMAP_URLS_PATH))}</loc></sitemap>` +
-    `</sitemapindex>`;
-};
-
 export const buildSitemapUrlXml = (urls: string[]): string => {
   const entries = urls.map((url) => `<url><loc>${xml(url)}</loc></url>`).join("");
   return `<?xml version="1.0" encoding="UTF-8"?>` +

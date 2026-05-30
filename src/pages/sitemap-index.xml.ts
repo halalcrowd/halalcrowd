@@ -1,7 +1,9 @@
-import { buildSitemapIndexXml, sitemapHeaders } from "../lib/sitemap";
+import { getDirectoryData } from "../lib/airtable";
+import { buildSitemapUrlXml, getSitemapUrls, sitemapHeaders } from "../lib/sitemap";
 
-export function GET() {
-  return new Response(buildSitemapIndexXml(), {
+export async function GET() {
+  const data = await getDirectoryData();
+  return new Response(buildSitemapUrlXml(getSitemapUrls(data)), {
     headers: sitemapHeaders
   });
 }
