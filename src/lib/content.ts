@@ -78,6 +78,10 @@ function cleanUrl(value: unknown): string {
   return text(value).trim();
 }
 
+function field(fields: Record<string, unknown>, fieldId: string, fieldName: string): unknown {
+  return fields[fieldId] ?? fields[fieldName];
+}
+
 function links(value: unknown): AirtableLinkedRecord[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is AirtableLinkedRecord => {
@@ -159,8 +163,8 @@ function normalizePlace(
     facebookUrl: cleanUrl(fields[FIELDS.foodPlaces.facebookUrl]),
     instagramUrl: cleanUrl(fields[FIELDS.foodPlaces.instagramUrl]),
     googleMapsUrl: cleanUrl(fields[FIELDS.foodPlaces.googleMapsUrl]),
-    imageUrl: cleanUrl(fields[FIELDS.foodPlaces.imageUrl]) || FALLBACK_IMAGE,
-    galleryImageUrl: cleanUrl(fields[FIELDS.foodPlaces.galleryImageUrl]),
+    imageUrl: cleanUrl(field(fields, FIELDS.foodPlaces.imageUrl, "Image URL")) || FALLBACK_IMAGE,
+    galleryImageUrl: cleanUrl(field(fields, FIELDS.foodPlaces.galleryImageUrl, "Gallery Images URL")),
     featured: fields[FIELDS.foodPlaces.featured] === true,
     brands: resolveLinks(fields[FIELDS.foodPlaces.brand], lookups.brands),
     neighbourhoods: resolveLinks(fields[FIELDS.foodPlaces.neighbourhood], lookups.neighbourhoods),

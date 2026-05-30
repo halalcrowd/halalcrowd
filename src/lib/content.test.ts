@@ -66,6 +66,23 @@ describe("normalizeDirectoryData", () => {
     expect(directory.places).toHaveLength(1);
     expect(directory.places[0].name).toBe("McDonald's Singapore Zoo");
     expect(directory.places[0].websiteUrl).toBe("https://www.mcdonalds.com.sg");
+    expect(directory.places[0].imageUrl).toBe("https://example.com/zoo.jpg");
+  });
+
+  it("accepts the Food Places Image URL field by name when field IDs are unavailable", () => {
+    const directory = normalizeDirectoryData({
+      ...rawData,
+      foodPlaces: [
+        record("recNamedImageField", {
+          fldgcSF6Fx6mmWzu2: "Named Image Outlet",
+          fldOo8LvtYfSDkjfz: "named-image-outlet",
+          fldbfWcWb6TI05bfJ: "MUIS Halal-certified",
+          "Image URL": "https://example.com/named-image.jpg"
+        })
+      ]
+    });
+
+    expect(directory.places[0].imageUrl).toBe("https://example.com/named-image.jpg");
   });
 
   it("resolves linked record names from inline values and lookup tables", () => {
