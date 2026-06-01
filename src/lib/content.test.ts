@@ -85,6 +85,21 @@ describe("normalizeDirectoryData", () => {
     expect(directory.places[0].imageUrl).toBe("https://example.com/named-image.jpg");
   });
 
+  it("trims explicit Food Places slugs from Airtable", () => {
+    const directory = normalizeDirectoryData({
+      ...rawData,
+      foodPlaces: [
+        record("recPlaceWithSpacedSlug", {
+          fldgcSF6Fx6mmWzu2: "Pizza Hut 126C Tengah Drive",
+          fldOo8LvtYfSDkjfz: "Pizza-hut-left-126C-Tengah-Drive ",
+          fldbfWcWb6TI05bfJ: "MUIS Halal-certified"
+        })
+      ]
+    });
+
+    expect(directory.places[0].slug).toBe("Pizza-hut-left-126C-Tengah-Drive");
+  });
+
   it("resolves linked record names from inline values and lookup tables", () => {
     const directory = normalizeDirectoryData(rawData);
     const place = directory.places[0];

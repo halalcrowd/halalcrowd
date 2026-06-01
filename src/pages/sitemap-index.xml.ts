@@ -1,9 +1,7 @@
-import { getDirectoryData } from "../lib/airtable";
-import { buildSitemapUrlXml, getSitemapUrls, sitemapHeaders } from "../lib/sitemap";
+import { buildSitemapIndexXml, SITEMAP_URLS_PATH, SITE_URL, sitemapHeaders } from "../lib/sitemap";
 
 export async function GET() {
-  const data = await getDirectoryData();
-  return new Response(buildSitemapUrlXml(getSitemapUrls(data)), {
+  return new Response(buildSitemapIndexXml([new URL(SITEMAP_URLS_PATH, SITE_URL).href]), {
     headers: sitemapHeaders
   });
 }

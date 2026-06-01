@@ -144,7 +144,7 @@ function normalizePlace(
 ): FoodPlace {
   const fields = record.fields;
   const name = text(fields[FIELDS.foodPlaces.placeName]);
-  const slug = text(fields[FIELDS.foodPlaces.slug]) || slugify(name);
+  const slug = text(fields[FIELDS.foodPlaces.slug]).trim() || slugify(name);
 
   return {
     id: record.id,

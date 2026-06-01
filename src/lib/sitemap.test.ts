@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSitemapUrlXml, getSitemapUrls } from "./sitemap";
+import { buildSitemapIndexXml, buildSitemapUrlXml, getSitemapUrls } from "./sitemap";
 import type { DirectoryData } from "./types";
 
 const directoryData: DirectoryData = {
@@ -55,5 +55,13 @@ describe("sitemap", () => {
     expect(sitemap).toContain("<urlset");
     expect(sitemap).toContain("<url><loc>https://halalcrowd.sg/</loc></url>");
     expect(sitemap).not.toContain("<html");
+  });
+
+  it("generates a sitemap index document that points to the URL sitemap", () => {
+    const sitemap = buildSitemapIndexXml(["https://halalcrowd.sg/sitemap-0.xml"]);
+
+    expect(sitemap).toContain("<sitemapindex");
+    expect(sitemap).toContain("<sitemap><loc>https://halalcrowd.sg/sitemap-0.xml</loc></sitemap>");
+    expect(sitemap).not.toContain("<urlset");
   });
 });

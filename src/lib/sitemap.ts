@@ -44,6 +44,14 @@ export const buildSitemapUrlXml = (urls: string[]): string => {
     `</urlset>`;
 };
 
+export const buildSitemapIndexXml = (urls: string[]): string => {
+  const entries = urls.map((url) => `<sitemap><loc>${xml(url)}</loc></sitemap>`).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>` +
+    `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` +
+    entries +
+    `</sitemapindex>`;
+};
+
 export const sitemapHeaders = {
   "Content-Type": "application/xml; charset=utf-8"
 };
