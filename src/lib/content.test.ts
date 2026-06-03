@@ -40,21 +40,21 @@ const rawData: RawDirectoryData = {
     record("recNeighbourhoodMandai", {
       fld3NrLuamdOa6g3T: "Mandai",
       fldxvjwCbGtllzfro: "mandai-estate",
-      fldXzufBDtHMvQWvI: ["recPlaceActive"]
+      fldqJICPnDsS9VXWD: ["recPlaceActive"]
     })
   ],
   malls: [
     record("recMallZoo", {
       fld3f636Scz9U8FGu: "Singapore Zoo",
       fldJgc4DNoNxj8Vaj: "singapore-zoo-location",
-      fldFs0jScxRCFD5Lk: ["recPlaceActive"]
+      fldZOmnp6zlSMcKF6: ["recPlaceActive"]
     })
   ],
   mrtStations: [
     record("recMrtKhatib", {
       fldvgCAt1Exb33CpN: "Khatib MRT",
       fldIuz0UqN72QCGow: "khatib-station",
-      fld1z8zgOdV28FzOg: ["recPlaceActive"]
+      fldSLUpt1XSjM2kiK: ["recPlaceActive"]
     })
   ]
 };

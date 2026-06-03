@@ -50,17 +50,17 @@ export const FIELDS = {
   neighbourhoods: {
     name: "fld3NrLuamdOa6g3T",
     slug: "fldxvjwCbGtllzfro",
-    places: "fldXzufBDtHMvQWvI"
+    places: "fldqJICPnDsS9VXWD"
   },
   malls: {
     name: "fld3f636Scz9U8FGu",
     slug: "fldJgc4DNoNxj8Vaj",
-    places: "fldFs0jScxRCFD5Lk"
+    places: "fldZOmnp6zlSMcKF6"
   },
   mrtStations: {
     name: "fldvgCAt1Exb33CpN",
     slug: "fldIuz0UqN72QCGow",
-    places: "fld1z8zgOdV28FzOg"
+    places: "fldSLUpt1XSjM2kiK"
   }
 } as const;
 
