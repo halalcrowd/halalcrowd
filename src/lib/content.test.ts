@@ -118,6 +118,38 @@ describe("normalizeDirectoryData", () => {
     expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-station" });
   });
 
+  it("resolves text location fields to entity pages and counts active outlets", () => {
+    const directory = normalizeDirectoryData({
+      ...rawData,
+      foodPlaces: [
+        record("recTextLocationPlace", {
+          fldgcSF6Fx6mmWzu2: "Text Location Outlet",
+          fldOo8LvtYfSDkjfz: "text-location-outlet",
+          fldLa5ewVJEvNuesO: "Mandai",
+          fldkBtytmhdwcHQLh: "Singapore Zoo",
+          fldFzC5orRtujErco: "Khatib MRT",
+          fldbfWcWb6TI05bfJ: "MUIS Halal-certified"
+        })
+      ]
+    });
+    const place = directory.places[0];
+
+    expect(place.neighbourhoods[0]).toMatchObject({
+      id: "recNeighbourhoodMandai",
+      name: "Mandai",
+      slug: "mandai-estate"
+    });
+    expect(place.malls[0]).toMatchObject({
+      id: "recMallZoo",
+      name: "Singapore Zoo",
+      slug: "singapore-zoo-location"
+    });
+    expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-station" });
+    expect(directory.neighbourhoods[0].placeCount).toBe(1);
+    expect(directory.malls[0].placeCount).toBe(1);
+    expect(directory.mrtStations[0].placeCount).toBe(1);
+  });
+
   it("counts active outlets for entities and exposes featured places", () => {
     const directory = normalizeDirectoryData(rawData);
 

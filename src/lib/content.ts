@@ -113,6 +113,15 @@ function entityMap(entities: DirectoryEntity[]): Map<string, DirectoryEntity> {
   return new Map(entities.map((entity) => [entity.id, entity]));
 }
 
+function entityNameMap(entities: DirectoryEntity[]): Map<string, DirectoryEntity> {
+  const lookup = new Map<string, DirectoryEntity>();
+  for (const entity of entities) {
+    lookup.set(slugify(entity.name), entity);
+    lookup.set(slugify(entity.slug), entity);
+  }
+  return lookup;
+}
+
 function resolveLinks(value: unknown, lookup: Map<string, DirectoryEntity>): LinkedEntitySummary[] {
   return links(value)
     .map((link) => {
@@ -129,6 +138,26 @@ function resolveLinks(value: unknown, lookup: Map<string, DirectoryEntity>): Lin
     .filter((item): item is LinkedEntitySummary => Boolean(item));
 }
 
+function resolveTextReferences(value: unknown, lookup: Map<string, DirectoryEntity>): LinkedEntitySummary[] {
+  const name = text(value).trim();
+  if (!name) return [];
+
+  const entity = lookup.get(slugify(name));
+  if (entity) {
+    return [{ id: entity.id, name: entity.name, slug: entity.slug }];
+  }
+
+  return [{ id: slugify(name), name, slug: slugify(name) }];
+}
+
+function resolveEntityReferences(
+  value: unknown,
+  idLookup: Map<string, DirectoryEntity>,
+  nameLookup: Map<string, DirectoryEntity>
+): LinkedEntitySummary[] {
+  return Array.isArray(value) ? resolveLinks(value, idLookup) : resolveTextReferences(value, nameLookup);
+}
+
 function hasStatus(record: AirtableRecord): boolean {
   return text(record.fields[FIELDS.foodPlaces.status]).trim().length > 0;
 }
@@ -137,9 +166,13 @@ function normalizePlace(
   record: AirtableRecord,
   lookups: {
     brands: Map<string, DirectoryEntity>;
+    brandsByName: Map<string, DirectoryEntity>;
     neighbourhoods: Map<string, DirectoryEntity>;
+    neighbourhoodsByName: Map<string, DirectoryEntity>;
     malls: Map<string, DirectoryEntity>;
+    mallsByName: Map<string, DirectoryEntity>;
     mrtStations: Map<string, DirectoryEntity>;
+    mrtStationsByName: Map<string, DirectoryEntity>;
   }
 ): FoodPlace {
   const fields = record.fields;
@@ -166,18 +199,32 @@ function normalizePlace(
     imageUrl: cleanUrl(field(fields, FIELDS.foodPlaces.imageUrl, "Image URL")) || FALLBACK_IMAGE,
     galleryImageUrl: cleanUrl(field(fields, FIELDS.foodPlaces.galleryImageUrl, "Gallery Images URL")),
     featured: fields[FIELDS.foodPlaces.featured] === true,
-    brands: resolveLinks(fields[FIELDS.foodPlaces.brand], lookups.brands),
-    neighbourhoods: resolveLinks(fields[FIELDS.foodPlaces.neighbourhood], lookups.neighbourhoods),
-    malls: resolveLinks(fields[FIELDS.foodPlaces.mall], lookups.malls),
-    mrtStations: resolveLinks(fields[FIELDS.foodPlaces.mrt], lookups.mrtStations)
+    brands: resolveEntityReferences(fields[FIELDS.foodPlaces.brand], lookups.brands, lookups.brandsByName),
+    neighbourhoods: resolveEntityReferences(
+      fields[FIELDS.foodPlaces.neighbourhood],
+      lookups.neighbourhoods,
+      lookups.neighbourhoodsByName
+    ),
+    malls: resolveEntityReferences(fields[FIELDS.foodPlaces.mall], lookups.malls, lookups.mallsByName),
+    mrtStations: resolveEntityReferences(fields[FIELDS.foodPlaces.mrt], lookups.mrtStations, lookups.mrtStationsByName)
   };
 }
 
-function countActivePlaces(entities: DirectoryEntity[], activePlaceIds: Set<string>): DirectoryEntity[] {
+function placeCounts(places: FoodPlace[], type: "brands" | "neighbourhoods" | "malls" | "mrtStations"): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const place of places) {
+    for (const entity of place[type]) {
+      counts.set(entity.id, (counts.get(entity.id) ?? 0) + 1);
+    }
+  }
+  return counts;
+}
+
+function countActivePlaces(entities: DirectoryEntity[], counts: Map<string, number>): DirectoryEntity[] {
   return entities
     .map((entity) => ({
       ...entity,
-      placeCount: entity.placeIds.filter((placeId) => activePlaceIds.has(placeId)).length
+      placeCount: counts.get(entity.id) ?? 0
     }))
     .sort((a, b) => b.placeCount - a.placeCount || a.name.localeCompare(b.name));
 }
@@ -198,16 +245,19 @@ export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
 
   const lookups = {
     brands: entityMap(brands),
+    brandsByName: entityNameMap(brands),
     neighbourhoods: entityMap(neighbourhoods),
+    neighbourhoodsByName: entityNameMap(neighbourhoods),
     malls: entityMap(malls),
-    mrtStations: entityMap(mrtStations)
+    mallsByName: entityNameMap(malls),
+    mrtStations: entityMap(mrtStations),
+    mrtStationsByName: entityNameMap(mrtStations)
   };
 
   const places = raw.foodPlaces
     .filter(hasStatus)
     .map((record) => normalizePlace(record, lookups))
     .filter((place) => place.name && place.slug);
-  const activePlaceIds = new Set(places.map((place) => place.id));
   const categories = [...new Set(places.map((place) => place.category).filter(Boolean))].sort((a, b) =>
     a.localeCompare(b)
   );
@@ -215,10 +265,10 @@ export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
   return {
     places,
     featuredPlaces: places.filter((place) => place.featured),
-    brands: countActivePlaces(brands, activePlaceIds),
-    neighbourhoods: countActivePlaces(neighbourhoods, activePlaceIds),
-    malls: countActivePlaces(malls, activePlaceIds),
-    mrtStations: countActivePlaces(mrtStations, activePlaceIds),
+    brands: countActivePlaces(brands, placeCounts(places, "brands")),
+    neighbourhoods: countActivePlaces(neighbourhoods, placeCounts(places, "neighbourhoods")),
+    malls: countActivePlaces(malls, placeCounts(places, "malls")),
+    mrtStations: countActivePlaces(mrtStations, placeCounts(places, "mrtStations")),
     categories
   };
 }
