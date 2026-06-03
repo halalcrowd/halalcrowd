@@ -23,9 +23,10 @@ const rawData: RawDirectoryData = {
       fldBMHLY2uXhsN4fF: "https://example.com/zoo.jpg",
       fldaxulW34UhrK764: true
     }),
-    record("recPlaceInactive", {
+    record("recPlaceWithoutStatus", {
       fldgcSF6Fx6mmWzu2: "Hidden Outlet",
       fldOo8LvtYfSDkjfz: "hidden-outlet",
+      fldzBH7Zk80AYQiZX: [{ id: "recBrandMcD", name: "McDonald's" }],
       fldbfWcWb6TI05bfJ: ""
     })
   ],
@@ -60,13 +61,15 @@ const rawData: RawDirectoryData = {
 };
 
 describe("normalizeDirectoryData", () => {
-  it("keeps only active places and trims external URLs", () => {
+  it("keeps places without status and trims external URLs", () => {
     const directory = normalizeDirectoryData(rawData);
 
-    expect(directory.places).toHaveLength(1);
+    expect(directory.places).toHaveLength(2);
     expect(directory.places[0].name).toBe("McDonald's Singapore Zoo");
     expect(directory.places[0].websiteUrl).toBe("https://www.mcdonalds.com.sg");
     expect(directory.places[0].imageUrl).toBe("https://example.com/zoo.jpg");
+    expect(directory.places[1].name).toBe("Hidden Outlet");
+    expect(directory.places[1].status).toBe("");
   });
 
   it("accepts the Food Places Image URL field by name when field IDs are unavailable", () => {
@@ -118,7 +121,7 @@ describe("normalizeDirectoryData", () => {
     expect(place.mrtStations[0]).toMatchObject({ id: "recMrtKhatib", name: "Khatib MRT", slug: "khatib-station" });
   });
 
-  it("resolves text location fields to entity pages and counts active outlets", () => {
+  it("resolves text location fields to entity pages and counts outlets", () => {
     const directory = normalizeDirectoryData({
       ...rawData,
       foodPlaces: [
@@ -150,11 +153,11 @@ describe("normalizeDirectoryData", () => {
     expect(directory.mrtStations[0].placeCount).toBe(1);
   });
 
-  it("counts active outlets for entities and exposes featured places", () => {
+  it("counts outlets for entities and exposes featured places", () => {
     const directory = normalizeDirectoryData(rawData);
 
     expect(directory.featuredPlaces).toHaveLength(1);
-    expect(directory.brands[0].placeCount).toBe(1);
+    expect(directory.brands[0].placeCount).toBe(2);
     expect(directory.neighbourhoods[0].placeCount).toBe(1);
   });
 });

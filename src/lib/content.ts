@@ -158,10 +158,6 @@ function resolveEntityReferences(
   return Array.isArray(value) ? resolveLinks(value, idLookup) : resolveTextReferences(value, nameLookup);
 }
 
-function hasStatus(record: AirtableRecord): boolean {
-  return text(record.fields[FIELDS.foodPlaces.status]).trim().length > 0;
-}
-
 function normalizePlace(
   record: AirtableRecord,
   lookups: {
@@ -220,7 +216,7 @@ function placeCounts(places: FoodPlace[], type: "brands" | "neighbourhoods" | "m
   return counts;
 }
 
-function countActivePlaces(entities: DirectoryEntity[], counts: Map<string, number>): DirectoryEntity[] {
+function countPlaces(entities: DirectoryEntity[], counts: Map<string, number>): DirectoryEntity[] {
   return entities
     .map((entity) => ({
       ...entity,
@@ -255,7 +251,6 @@ export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
   };
 
   const places = raw.foodPlaces
-    .filter(hasStatus)
     .map((record) => normalizePlace(record, lookups))
     .filter((place) => place.name && place.slug);
   const categories = [...new Set(places.map((place) => place.category).filter(Boolean))].sort((a, b) =>
@@ -265,10 +260,10 @@ export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
   return {
     places,
     featuredPlaces: places.filter((place) => place.featured),
-    brands: countActivePlaces(brands, placeCounts(places, "brands")),
-    neighbourhoods: countActivePlaces(neighbourhoods, placeCounts(places, "neighbourhoods")),
-    malls: countActivePlaces(malls, placeCounts(places, "malls")),
-    mrtStations: countActivePlaces(mrtStations, placeCounts(places, "mrtStations")),
+    brands: countPlaces(brands, placeCounts(places, "brands")),
+    neighbourhoods: countPlaces(neighbourhoods, placeCounts(places, "neighbourhoods")),
+    malls: countPlaces(malls, placeCounts(places, "malls")),
+    mrtStations: countPlaces(mrtStations, placeCounts(places, "mrtStations")),
     categories
   };
 }

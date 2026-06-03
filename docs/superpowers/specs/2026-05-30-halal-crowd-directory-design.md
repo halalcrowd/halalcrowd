@@ -33,7 +33,7 @@ The interface uses a refined editorial directory style inspired by The Scout Gui
 - Malls table: `tblNHIMo2JeeXshr9`
 - MRT Stations table: `tblk6wqWRk16yY45D`
 - Use field IDs for Airtable mapping.
-- Treat a Food Place as active when `Status` is not empty.
+- Build Food Place pages whenever a record has a name and slug. Display `Status` as an optional label when present.
 - Trim `Website URL`, `Facebook URL`, `Instagram URL`, and `Google Maps URL` values.
 - Generate non-place slugs from `Name` using lowercase hyphenation.
 - Use linked record names from Airtable when available, with table lookups as fallback.
