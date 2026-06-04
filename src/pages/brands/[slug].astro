@@ -2,6 +2,7 @@
 import PlaceCard from "../../components/PlaceCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getDirectoryData } from "../../lib/airtable";
+import { getBrandPageProfile } from "../../lib/brand-page";
 import { placesForEntity } from "../../lib/content";
 import { parseBrandDescription } from "../../lib/rich-text";
 
@@ -12,38 +13,173 @@ export async function getStaticPaths() {
 
 const { entity, places } = Astro.props;
 const descriptionBlocks = parseBrandDescription(entity.description);
+const profile = getBrandPageProfile(entity, places);
+const featuredPlaces = places.slice(0, 6);
 ---
 
 <BaseLayout title={entity.name} description={`Browse ${entity.placeCount} halal food outlets for ${entity.name} in Singapore.`}>
-  <section class="container-page py-14" data-pagefind-body data-pagefind-meta={`brand:${entity.name}`}>
-    <p class="eyebrow">Brand</p>
-    <h1 class="editorial-title mt-5">{entity.name}</h1>
-    <p class="mt-6 text-lg text-muted">{entity.placeCount} outlets across Singapore.</p>
-  </section>
-  {
-    descriptionBlocks.length > 0 && (
-      <section class="container-page pb-8">
-        <article class="max-w-3xl border-y border-line py-10">
-          {descriptionBlocks.map((block) => {
-            if (block.type === "h1") {
-              return <h2 class="font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl">{block.text}</h2>;
-            }
-            if (block.type === "h2") {
-              return <h3 class="mt-10 font-display text-3xl font-semibold leading-tight text-ink">{block.text}</h3>;
-            }
-            if (block.type === "h3") {
-              return <h4 class="mt-8 text-xl font-semibold leading-snug text-ink">{block.text}</h4>;
-            }
-            return <p class="mt-5 text-lg leading-8 text-muted">{block.text}</p>;
-          })}
-        </article>
+  <div data-pagefind-body data-pagefind-meta={`brand:${entity.name}`}>
+    <section class="container-page py-10 sm:py-14">
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-stretch">
+        <div class="flex min-h-[460px] flex-col justify-between bg-halal px-6 py-7 text-white sm:px-8 lg:px-10">
+          <div>
+            <div class="flex flex-wrap gap-2">
+              <span class="rounded-full bg-white/12 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/90">Brand Guide</span>
+              {profile.statusLabel && <span class="rounded-full bg-white px-4 py-2 text-xs font-semibold text-halal">{profile.statusLabel}</span>}
+            </div>
+            <h1 class="mt-10 font-display text-6xl font-semibold leading-[0.92] sm:text-7xl lg:text-8xl">{entity.name}</h1>
+          </div>
+          <div class="mt-12 grid gap-4 border-t border-white/25 pt-6 sm:grid-cols-3">
+            <div>
+              <span class="block text-3xl font-semibold">{entity.placeCount}</span>
+              <span class="text-sm text-white/75">outlets listed</span>
+            </div>
+            <div>
+              <span class="block text-3xl font-semibold">{profile.categories.length || 0}</span>
+              <span class="text-sm text-white/75">food categories</span>
+            </div>
+            <div>
+              <span class="block text-3xl font-semibold">{profile.popularAreas.length || 0}</span>
+              <span class="text-sm text-white/75">popular areas</span>
+            </div>
+          </div>
+        </div>
+        <div class="relative min-h-[360px] overflow-hidden bg-shell">
+          {
+            profile.heroImageUrl ? (
+              <img src={profile.heroImageUrl} alt={`${entity.name} outlet preview`} class="h-full min-h-[360px] w-full object-cover" />
+            ) : (
+              <div class="flex h-full min-h-[360px] items-center justify-center bg-sage px-8 text-center font-display text-4xl font-semibold text-halal">
+                {entity.name}
+              </div>
+            )
+          }
+          <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent p-6 text-white">
+            <p class="max-w-sm text-sm leading-6 text-white/85">Browse halal outlets, key locations, and brand notes for {entity.name} across Singapore.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container-page grid gap-10 py-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+      <div class="min-w-0">
+        {
+          descriptionBlocks.length > 0 ? (
+            <article class="border-y border-line py-10">
+              {descriptionBlocks.map((block) => {
+                if (block.type === "h1") {
+                  return <h2 class="max-w-4xl font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl">{block.text}</h2>;
+                }
+                if (block.type === "h2") {
+                  return <h3 class="mt-10 max-w-3xl font-display text-3xl font-semibold leading-tight text-ink">{block.text}</h3>;
+                }
+                if (block.type === "h3") {
+                  return <h4 class="mt-8 max-w-3xl text-xl font-semibold leading-snug text-ink">{block.text}</h4>;
+                }
+                return <p class="mt-5 max-w-3xl text-lg leading-8 text-muted">{block.text}</p>;
+              })}
+            </article>
+          ) : (
+            <article class="border-y border-line py-10">
+              <h2 class="font-display text-4xl font-semibold leading-tight text-ink">About {entity.name}</h2>
+              <p class="mt-5 max-w-3xl text-lg leading-8 text-muted">
+                Explore {entity.name} outlets in Singapore, with halal certification details and nearby locations from the Halal Crowd directory.
+              </p>
+            </article>
+          )
+        }
+
+        <section class="py-12">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="eyebrow">Directory Highlights</p>
+            <h2 class="section-title mt-3">Featured Outlets</h2>
+          </div>
+          <a href="#all-outlets" class="focus-ring text-sm font-semibold text-halal">View all {entity.placeCount}</a>
+        </div>
+        <div class="mt-7 grid gap-5 md:grid-cols-2">
+          {featuredPlaces.map((place) => <PlaceCard place={place} compact />)}
+        </div>
+        </section>
+      </div>
+
+      <aside class="space-y-5 lg:sticky lg:top-6">
+      <section class="border border-line bg-paper p-5 shadow-sm">
+        <h2 class="font-display text-2xl font-semibold text-ink">Brand Snapshot</h2>
+        <dl class="mt-5 space-y-4 text-sm">
+          <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
+            <dt class="text-muted">Certification</dt>
+            <dd class="text-right font-semibold text-ink">{profile.statusLabel || "Listed halal outlets"}</dd>
+          </div>
+          <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
+            <dt class="text-muted">Outlets</dt>
+            <dd class="font-semibold text-ink">{entity.placeCount}</dd>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <dt class="text-muted">Coverage</dt>
+            <dd class="font-semibold text-ink">{profile.popularAreas.length ? `${profile.popularAreas.length}+ areas` : "Singapore"}</dd>
+          </div>
+        </dl>
       </section>
-    )
-  }
-  <section class="container-page py-8">
-    <h2 class="section-title mb-6">Outlets</h2>
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+      {
+        profile.categories.length > 0 && (
+          <section class="border border-line bg-shell p-5">
+            <h2 class="font-display text-2xl font-semibold text-ink">Food Categories</h2>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {profile.categories.map((category) => (
+                <span class="rounded-full bg-paper px-3 py-1 text-sm font-semibold text-halal">{category}</span>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        profile.popularAreas.length > 0 && (
+          <section class="border border-line bg-paper p-5">
+            <h2 class="font-display text-2xl font-semibold text-ink">Popular Areas</h2>
+            <div class="mt-4 space-y-3">
+              {profile.popularAreas.map((area) => (
+                <a href={`/neighbourhoods/${area.slug}`} class="focus-ring flex items-center justify-between gap-4 text-sm">
+                  <span class="font-medium text-ink">{area.name}</span>
+                  <span class="text-muted">{area.count} outlets</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        profile.popularMalls.length > 0 && (
+          <section class="border border-line bg-paper p-5">
+            <h2 class="font-display text-2xl font-semibold text-ink">Mall Hotspots</h2>
+            <div class="mt-4 space-y-3">
+              {profile.popularMalls.map((mall) => (
+                <a href={`/malls/${mall.slug}`} class="focus-ring flex items-center justify-between gap-4 text-sm">
+                  <span class="font-medium text-ink">{mall.name}</span>
+                  <span class="text-muted">{mall.count} outlets</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
+      }
+      </aside>
+    </section>
+
+    <section id="all-outlets" class="container-page py-10">
+    <div class="flex flex-wrap items-end justify-between gap-4 border-t border-line pt-10">
+      <div>
+        <p class="eyebrow">Contact & Location</p>
+        <h2 class="section-title mt-3">All {entity.name} Outlets</h2>
+      </div>
+      <p class="text-sm text-muted">{entity.placeCount} locations refreshed from Airtable</p>
+    </div>
+    <div class="mt-7 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {places.map((place) => <PlaceCard place={place} />)}
     </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>
