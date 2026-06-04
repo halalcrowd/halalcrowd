@@ -34,6 +34,7 @@ const rawData: RawDirectoryData = {
     record("recBrandMcD", {
       fldoRlPEiUzBtv1io: "McDonald's",
       fldPbXwr7jP6eIyH7: "mcdonalds-sg",
+      fldqVtJi4v0tQlTBP: "# About McDonald's\n\n## Singapore halal outlets\nA family-friendly brand.",
       fldt170QMF1Ns36GE: ["recPlaceActive"]
     })
   ],
@@ -101,6 +102,12 @@ describe("normalizeDirectoryData", () => {
     });
 
     expect(directory.places[0].slug).toBe("Pizza-hut-left-126C-Tengah-Drive");
+  });
+
+  it("exposes Brand Description content from Airtable brands", () => {
+    const directory = normalizeDirectoryData(rawData);
+
+    expect(directory.brands[0].description).toBe("# About McDonald's\n\n## Singapore halal outlets\nA family-friendly brand.");
   });
 
   it("resolves linked record names from inline values and lookup tables", () => {

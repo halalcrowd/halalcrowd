@@ -45,6 +45,7 @@ export const FIELDS = {
   brands: {
     name: "fldoRlPEiUzBtv1io",
     slug: "fldPbXwr7jP6eIyH7",
+    description: "fldqVtJi4v0tQlTBP",
     places: "fldt170QMF1Ns36GE"
   },
   neighbourhoods: {
@@ -97,13 +98,20 @@ function linkName(link: AirtableLinkedRecord): string {
   return typeof link === "string" ? "" : link.name ?? "";
 }
 
-function entityFromRecord(record: AirtableRecord, nameField: string, slugField: string, placesField: string): DirectoryEntity {
+function entityFromRecord(
+  record: AirtableRecord,
+  nameField: string,
+  slugField: string,
+  placesField: string,
+  descriptionField?: string
+): DirectoryEntity {
   const name = text(record.fields[nameField]);
   const slug = text(record.fields[slugField]).trim() || slugify(name);
   return {
     id: record.id,
     name,
     slug,
+    description: descriptionField ? text(field(record.fields, descriptionField, "Brand Description")).trim() : "",
     placeIds: links(record.fields[placesField]).map(linkId),
     placeCount: 0
   };
@@ -227,7 +235,9 @@ function countPlaces(entities: DirectoryEntity[], counts: Map<string, number>): 
 
 export function normalizeDirectoryData(raw: RawDirectoryData): DirectoryData {
   const brands = raw.brands
-    .map((record) => entityFromRecord(record, FIELDS.brands.name, FIELDS.brands.slug, FIELDS.brands.places))
+    .map((record) =>
+      entityFromRecord(record, FIELDS.brands.name, FIELDS.brands.slug, FIELDS.brands.places, FIELDS.brands.description)
+    )
     .filter((entity) => entity.name && entity.slug);
   const neighbourhoods = raw.neighbourhoods.map((record) =>
     entityFromRecord(record, FIELDS.neighbourhoods.name, FIELDS.neighbourhoods.slug, FIELDS.neighbourhoods.places)

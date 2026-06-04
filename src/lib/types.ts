@@ -18,6 +18,7 @@ export interface DirectoryEntity {
   id: string;
   name: string;
   slug: string;
+  description: string;
   placeIds: string[];
   placeCount: number;
 }
