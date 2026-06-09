@@ -79,6 +79,10 @@ function cleanUrl(value: unknown): string {
   return text(value).trim();
 }
 
+function canonicalSlug(value: unknown, fallback: string): string {
+  return slugify(text(value).trim() || fallback);
+}
+
 function field(fields: Record<string, unknown>, fieldId: string, fieldName: string): unknown {
   return fields[fieldId] ?? fields[fieldName];
 }
@@ -106,7 +110,7 @@ function entityFromRecord(
   descriptionField?: string
 ): DirectoryEntity {
   const name = text(record.fields[nameField]);
-  const slug = text(record.fields[slugField]).trim() || slugify(name);
+  const slug = canonicalSlug(record.fields[slugField], name);
   return {
     id: record.id,
     name,
@@ -181,7 +185,7 @@ function normalizePlace(
 ): FoodPlace {
   const fields = record.fields;
   const name = text(fields[FIELDS.foodPlaces.placeName]);
-  const slug = text(fields[FIELDS.foodPlaces.slug]).trim() || slugify(name);
+  const slug = canonicalSlug(fields[FIELDS.foodPlaces.slug], name);
 
   return {
     id: record.id,

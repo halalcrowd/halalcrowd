@@ -89,7 +89,7 @@ describe("normalizeDirectoryData", () => {
     expect(directory.places[0].imageUrl).toBe("https://example.com/named-image.jpg");
   });
 
-  it("trims explicit Food Places slugs from Airtable", () => {
+  it("normalizes explicit Food Places slugs from Airtable", () => {
     const directory = normalizeDirectoryData({
       ...rawData,
       foodPlaces: [
@@ -101,7 +101,46 @@ describe("normalizeDirectoryData", () => {
       ]
     });
 
-    expect(directory.places[0].slug).toBe("Pizza-hut-left-126C-Tengah-Drive");
+    expect(directory.places[0].slug).toBe("pizza-hut-left-126c-tengah-drive");
+  });
+
+  it("normalizes explicit entity slugs from Airtable", () => {
+    const directory = normalizeDirectoryData({
+      ...rawData,
+      brands: [
+        record("recBrandMcD", {
+          fldoRlPEiUzBtv1io: "McDonald's",
+          fldPbXwr7jP6eIyH7: "McDonalds-SG ",
+          fldt170QMF1Ns36GE: ["recPlaceActive"]
+        })
+      ],
+      neighbourhoods: [
+        record("recNeighbourhoodMandai", {
+          fld3NrLuamdOa6g3T: "Mandai",
+          fldxvjwCbGtllzfro: "Mandai-Estate ",
+          fldqJICPnDsS9VXWD: ["recPlaceActive"]
+        })
+      ],
+      malls: [
+        record("recMallZoo", {
+          fld3f636Scz9U8FGu: "Singapore Zoo",
+          fldJgc4DNoNxj8Vaj: "Singapore-Zoo-Location ",
+          fldZOmnp6zlSMcKF6: ["recPlaceActive"]
+        })
+      ],
+      mrtStations: [
+        record("recMrtKhatib", {
+          fldvgCAt1Exb33CpN: "Khatib MRT",
+          fldIuz0UqN72QCGow: "Khatib-Station ",
+          fldSLUpt1XSjM2kiK: ["recPlaceActive"]
+        })
+      ]
+    });
+
+    expect(directory.brands[0].slug).toBe("mcdonalds-sg");
+    expect(directory.neighbourhoods[0].slug).toBe("mandai-estate");
+    expect(directory.malls[0].slug).toBe("singapore-zoo-location");
+    expect(directory.mrtStations[0].slug).toBe("khatib-station");
   });
 
   it("exposes Brand Description content from Airtable brands", () => {
