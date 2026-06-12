@@ -4,7 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getDirectoryData } from "../../lib/airtable";
 import { getBrandPageProfile } from "../../lib/brand-page";
 import { placesForEntity } from "../../lib/content";
-import { parseBrandDescription } from "../../lib/rich-text";
+import { normalizeBrandDescriptionForPage } from "../../lib/rich-text";
 
 export async function getStaticPaths() {
   const data = await getDirectoryData();
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { entity, places } = Astro.props;
-const descriptionBlocks = parseBrandDescription(entity.description);
+const descriptionBlocks = normalizeBrandDescriptionForPage(entity.description);
 const profile = getBrandPageProfile(entity, places);
 const featuredPlaces = places.slice(0, 6);
 ---
@@ -67,13 +67,13 @@ const featuredPlaces = places.slice(0, 6);
           descriptionBlocks.length > 0 ? (
             <article class="border-y border-line py-10">
               {descriptionBlocks.map((block) => {
-                if (block.type === "h1") {
+                if (block.type === "h2") {
                   return <h2 class="max-w-4xl font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl">{block.text}</h2>;
                 }
-                if (block.type === "h2") {
+                if (block.type === "h3") {
                   return <h3 class="mt-10 max-w-3xl font-display text-3xl font-semibold leading-tight text-ink">{block.text}</h3>;
                 }
-                if (block.type === "h3") {
+                if (block.type === "h4") {
                   return <h4 class="mt-8 max-w-3xl text-xl font-semibold leading-snug text-ink">{block.text}</h4>;
                 }
                 return <p class="mt-5 max-w-3xl text-lg leading-8 text-muted">{block.text}</p>;
