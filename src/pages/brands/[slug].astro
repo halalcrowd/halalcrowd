@@ -5,6 +5,7 @@ import { getDirectoryData } from "../../lib/airtable";
 import { getBrandPageProfile } from "../../lib/brand-page";
 import { placesForEntity } from "../../lib/content";
 import { normalizeBrandDescriptionForPage } from "../../lib/rich-text";
+import { indexablePath } from "../../lib/routes";
 
 export async function getStaticPaths() {
   const data = await getDirectoryData();
@@ -141,7 +142,7 @@ const featuredPlaces = places.slice(0, 6);
             <h2 class="font-display text-2xl font-semibold text-ink">Popular Areas</h2>
             <div class="mt-4 space-y-3">
               {profile.popularAreas.map((area) => (
-                <a href={`/neighbourhoods/${area.slug}`} class="focus-ring flex items-center justify-between gap-4 text-sm">
+                <a href={indexablePath(`/neighbourhoods/${area.slug}`)} class="focus-ring flex items-center justify-between gap-4 text-sm">
                   <span class="font-medium text-ink">{area.name}</span>
                   <span class="text-muted">{area.count} outlets</span>
                 </a>
@@ -157,7 +158,7 @@ const featuredPlaces = places.slice(0, 6);
             <h2 class="font-display text-2xl font-semibold text-ink">Mall Hotspots</h2>
             <div class="mt-4 space-y-3">
               {profile.popularMalls.map((mall) => (
-                <a href={`/malls/${mall.slug}`} class="focus-ring flex items-center justify-between gap-4 text-sm">
+                <a href={indexablePath(`/malls/${mall.slug}`)} class="focus-ring flex items-center justify-between gap-4 text-sm">
                   <span class="font-medium text-ink">{mall.name}</span>
                   <span class="text-muted">{mall.count} outlets</span>
                 </a>

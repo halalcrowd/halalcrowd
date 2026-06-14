@@ -8,6 +8,12 @@ describe("seo helpers", () => {
     expect(canonical).toBe("https://halalcrowd.sg/search/");
   });
 
+  it("normalizes canonical URLs to trailing-slash page URLs", () => {
+    const canonical = getCanonicalUrl(new URL("https://halalcrowd.sg/directory"));
+
+    expect(canonical).toBe("https://halalcrowd.sg/directory/");
+  });
+
   it("uses noindex,follow only for pages excluded from search results", () => {
     expect(getRobotsContent(true)).toBe("noindex,follow");
     expect(getRobotsContent(false)).toBeUndefined();

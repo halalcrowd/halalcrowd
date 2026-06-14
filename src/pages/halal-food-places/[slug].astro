@@ -2,6 +2,7 @@
 import PlaceCard from "../../components/PlaceCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getDirectoryData } from "../../lib/airtable";
+import { indexablePath } from "../../lib/routes";
 
 export async function getStaticPaths() {
   const data = await getDirectoryData();
@@ -45,7 +46,7 @@ const jsonLd = {
         <img src={place.imageUrl} alt={place.name} class="h-full w-full object-cover" />
       </div>
       <div>
-        {brand && <a href={`/brands/${brand.slug}`} class="eyebrow">{brand.name}</a>}
+        {brand && <a href={indexablePath(`/brands/${brand.slug}`)} class="eyebrow">{brand.name}</a>}
         <h1 class="editorial-title mt-5">{place.name}</h1>
         <div class="mt-6 flex flex-wrap gap-2">
           {place.status && <span class="rounded-full bg-sage px-4 py-2 text-sm font-semibold text-halal">{place.status}</span>}
@@ -68,9 +69,9 @@ const jsonLd = {
           ))}
         </dl>
         <div class="mt-8 flex flex-wrap gap-3">
-          {neighbourhood && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/neighbourhoods/${neighbourhood.slug}`}>{neighbourhood.name}</a>}
-          {mall && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/malls/${mall.slug}`}>{mall.name}</a>}
-          {mrt && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={`/mrt-stations/${mrt.slug}`}>{mrt.name}</a>}
+          {neighbourhood && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={indexablePath(`/neighbourhoods/${neighbourhood.slug}`)}>{neighbourhood.name}</a>}
+          {mall && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={indexablePath(`/malls/${mall.slug}`)}>{mall.name}</a>}
+          {mrt && <a class="focus-ring border border-line px-4 py-3 text-sm font-semibold hover:bg-shell" href={indexablePath(`/mrt-stations/${mrt.slug}`)}>{mrt.name}</a>}
         </div>
         {externalLinks.length > 0 && (
           <div class="mt-8 flex flex-wrap gap-3">

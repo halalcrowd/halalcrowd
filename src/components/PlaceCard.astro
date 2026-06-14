@@ -1,5 +1,6 @@
 ---
 import type { FoodPlace } from "../lib/types";
+import { indexablePath } from "../lib/routes";
 
 interface Props {
   place: FoodPlace;
@@ -14,7 +15,7 @@ const mrt = place.mrtStations[0];
 ---
 
 <article class="group overflow-hidden border border-line bg-paper shadow-sm transition hover:-translate-y-0.5 hover:shadow-editorial">
-  <a href={`/halal-food-places/${place.slug}`} class="focus-ring block">
+  <a href={indexablePath(`/halal-food-places/${place.slug}`)} class="focus-ring block">
     <div class={compact ? "aspect-[4/3] overflow-hidden bg-shell" : "aspect-[5/4] overflow-hidden bg-shell"}>
       <img
         src={place.imageUrl}

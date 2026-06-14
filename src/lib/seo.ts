@@ -1,5 +1,7 @@
+import { indexablePath } from "./routes";
+
 export const getCanonicalUrl = (url: URL): string => {
-  const canonical = new URL(url.pathname, url.origin);
+  const canonical = new URL(indexablePath(url.pathname), url.origin);
   return canonical.href;
 };
 
