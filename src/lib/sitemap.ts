@@ -2,7 +2,7 @@ import { ENTITY_PAGE_CONFIGS } from "./entity-pages";
 import type { DirectoryData } from "./types";
 
 export const SITE_URL = "https://halalcrowd.sg";
-export const SITEMAP_INDEX_PATH = "/sitemap-index.xml";
+export const SITEMAP_INDEX_PATH = "/sitemap.xml";
 export const SITEMAP_URLS_PATH = "/sitemap-0.xml";
 
 const xml = (value: string): string => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSitemapIndexXml, buildSitemapUrlXml, getSitemapUrls } from "./sitemap";
+import { buildSitemapIndexXml, buildSitemapUrlXml, getSitemapUrls, SITEMAP_INDEX_PATH } from "./sitemap";
 import type { DirectoryData } from "./types";
 
 const directoryData: DirectoryData = {
@@ -54,6 +54,10 @@ const directoryData: DirectoryData = {
 };
 
 describe("sitemap", () => {
+  it("uses the canonical sitemap index URL expected by search engines", () => {
+    expect(SITEMAP_INDEX_PATH).toBe("/sitemap.xml");
+  });
+
   it("lists indexable site URLs and excludes search and 404 pages", () => {
     const urls = getSitemapUrls(directoryData);
 
