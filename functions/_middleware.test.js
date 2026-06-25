@@ -8,7 +8,23 @@ describe("lowercase path middleware", () => {
     );
   });
 
+  it("redirects indexed page URLs without trailing slashes to their canonical page path", () => {
+    expect(lowercaseRedirectUrl("https://halalcrowd.sg/halal-food-places/kfc-lentor-modern")).toBe(
+      "https://halalcrowd.sg/halal-food-places/kfc-lentor-modern/"
+    );
+    expect(lowercaseRedirectUrl("https://halalcrowd.sg/malls/junction-10?ref=gsc")).toBe(
+      "https://halalcrowd.sg/malls/junction-10/?ref=gsc"
+    );
+  });
+
+  it("normalizes mixed-case and missing trailing slash indexed URLs in one redirect", () => {
+    expect(lowercaseRedirectUrl("https://halalcrowd.sg/brands/Dynamic-Dining-House")).toBe(
+      "https://halalcrowd.sg/brands/dynamic-dining-house/"
+    );
+  });
+
   it("leaves lowercase indexed URLs and unrelated assets alone", () => {
+    expect(lowercaseRedirectUrl("https://halalcrowd.sg/halal-food-places/kfc-lentor-modern/")).toBeNull();
     expect(lowercaseRedirectUrl("https://halalcrowd.sg/brands/mcdonalds/")).toBeNull();
     expect(lowercaseRedirectUrl("https://halalcrowd.sg/assets/HalalCrowd.png")).toBeNull();
   });

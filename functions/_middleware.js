@@ -10,10 +10,15 @@ export function lowercaseRedirectUrl(requestUrl) {
   const url = new URL(requestUrl);
   if (!INDEXED_PATH_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return null;
 
-  const lowercasePath = url.pathname.toLowerCase();
-  if (url.pathname === lowercasePath) return null;
+  let canonicalPath = url.pathname.toLowerCase();
+  const lastSegment = canonicalPath.split("/").pop() ?? "";
+  if (!canonicalPath.endsWith("/") && !lastSegment.includes(".")) {
+    canonicalPath = `${canonicalPath}/`;
+  }
 
-  url.pathname = lowercasePath;
+  if (url.pathname === canonicalPath) return null;
+
+  url.pathname = canonicalPath;
   return url.href;
 }
 
